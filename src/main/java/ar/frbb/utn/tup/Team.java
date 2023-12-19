@@ -1,5 +1,9 @@
 package ar.frbb.utn.tup;
 
+import ar.frbb.utn.tup.characters.Character;
+import ar.frbb.utn.tup.characters.Entity;
+import ar.frbb.utn.tup.characters.Hero;
+import ar.frbb.utn.tup.characters.Villain;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -139,21 +143,43 @@ public class Team {
 
             JSONObject appearance = (JSONObject) charData.get("appearance");
             String race = (String) appearance.get("race");
+            String gender = (String) appearance.get("gender");
 
             JSONObject image = (JSONObject) charData.get("image");
             String imageURL = (String) image.get("url");
 
-            System.out.println(name +" ("+ race + ") "+ imageURL);
+            // TO DO: Stats "null" (buscar otro personaje)
+            JSONObject powerstats = (JSONObject) charData.get("powerstats");
+            // Empty stats, request another Character
+            if(powerstats.get("durability").equals("null")) {
+                return null;
+            }
 
-            return new Hero(name, race, imageURL);
+            Stats stats = new Stats()
+                    .setCombat(Integer.parseInt((String) powerstats.get("combat")))
+                    .setDurability(Integer.parseInt((String) powerstats.get("durability")))
+                    .setStrength(Integer.parseInt((String) powerstats.get("strength")))
+                    .setIntelligence(Integer.parseInt((String) powerstats.get("intelligence")))
+                    .setSpeed(Integer.parseInt((String) powerstats.get("speed")))
+                    .setPower(Integer.parseInt((String) powerstats.get("power")));
+
+            JSONObject bio = (JSONObject) charData.get("biography");
+            String alignment = (String) bio.get("alignment");
+
+            Character character = switch (alignment) {
+                case "good" -> new Hero(name, race, gender, imageURL, alignment, stats);
+                case "bad" -> new Villain(name, race, gender, imageURL, alignment, stats);
+                default -> new Entity(name, race, gender, imageURL, alignment, stats);
+            };
+
+            System.out.println(character);
+            return character;
 
         } catch(ParseException e){
             e.printStackTrace();
         } catch (UnirestException e) {
             throw new RuntimeException(e);
         }
-
-        return new Hero();
-
+        return null;
     }
 }

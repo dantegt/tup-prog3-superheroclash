@@ -1,10 +1,15 @@
 package ar.frbb.utn.tup;
 
+import java.util.ArrayList;
+
 public class Log {
-    public static void it (String it) {
-        System.out.println(it);
+    // 👺 Log Master
+    private static ArrayList<String> logs = new ArrayList<>();
+    public static ArrayList<String> it (String message) {
+        logs.add(message);
+        return logs;
     }
-    public static void ask (String it) {
-        System.out.print(it);
+    public static ArrayList<String> list () {
+        return logs;
     }
 }

@@ -26,7 +26,9 @@ public class Game {
             String opcion = e.getActionCommand();
 
             switch (opcion) {
-                case "pelear": vm.iniciarPelea(); break;
+                case "seleccionar" -> vm.seleccionarPersonajes();
+                case "pelear" -> vm.iniciarPelea();
+                case "nuevoJuego" -> vm.jugarDeNuevo();
             }
         }
     }
