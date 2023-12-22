@@ -13,13 +13,14 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static ar.frbb.utn.tup.Game.APP_NAME;
+import static ar.frbb.utn.tup.Log.exportLog;
 import static ar.frbb.utn.tup.Team.getCharacter;
 
 public class UI {
     JFrame window;
     JPanel pantallaInicio, titulos, panelPrincipal, activeHero1, activeHero2, pelea, panelGanador;
-    JLabel fondo, endFondo, logo, loading, titulo, turno, heroImageCache1, heroImageCache2;
-    JButton botonIniciar, botonPelear, botonVolverAJugar, proximoTurno;
+    JLabel fondo, endFondo, logo, loading, titulo, turno, heroImageCache1, heroImageCache2, logExportado;
+    JButton botonIniciar, botonPelear, botonVolverAJugar, proximoTurno, finDelCombate, exportarLog;
     Character hero1, hero2, ganador;
     Image logoImage;
     Game.ChoiceHandler choiceHandler;
@@ -200,12 +201,19 @@ public class UI {
         proximoTurno.addActionListener(choiceHandler);
         proximoTurno.setActionCommand("proximoTurno");
 
+        finDelCombate = new JButton("FIN DEL COMBATE");
+        finDelCombate.setBounds(200, 450, 300, 80);
+        finDelCombate.setAlignmentX(0.5f);
+        finDelCombate.addActionListener(choiceHandler);
+        finDelCombate.setActionCommand("finDelCombate");
+
         pelea.add(turno);
         pelea.add(botonPelear);
         pelea.add(proximoTurno);
+        pelea.add(finDelCombate);
         ArrayList<String> logs = Log.logs;
         for(String log: logs) {
-            JLabel label = new JLabel(log, SwingConstants.LEFT);
+            JLabel label = new JLabel("<html>" + log + "</html>", SwingConstants.LEFT);
             label.setFont(fontLogs);
             label.setAlignmentX(0.5f);
             pelea.add(label);
@@ -236,17 +244,27 @@ public class UI {
         heroImageCache2 = null;
     }
 
+    void exportarLog() {
+        try {
+            exportLog();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     JPanel buildHeroUI(Character hero, int heroNum) {
         JPanel activeHero = new JPanel();
         activeHero.setLayout(new BoxLayout(activeHero, BoxLayout.Y_AXIS));
         activeHero.add(getPersonajeImage(hero, heroNum));
         activeHero.add(getPersonajeName(hero));
+        activeHero.add(getPersonajeAlignment(hero));
         activeHero.add(getPersonajeHp(hero));
         return activeHero;
     }
 
     JPanel crearPanelGanador(Game.ChoiceHandler cHandler, Character character) {
         Font fontHeroName = new Font("Masked Hero Demo", Font.PLAIN, 23);
+        Font fontAviso = new Font("Arial", Font.PLAIN, 17);
         JLabel titulo = new JLabel("Ganador!", SwingConstants.CENTER);
         titulo.setOpaque(false);
         titulo.setFont(fontHeroName);
@@ -268,18 +286,33 @@ public class UI {
         name.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         botonVolverAJugar = new JButton("VOLVER A PELEAR!");
-        botonVolverAJugar.setBounds(400, 560, 200, 60);
+        botonVolverAJugar.setBounds(400, 560, 200, 30);
         botonVolverAJugar.addActionListener(cHandler);
         botonVolverAJugar.setActionCommand("nuevoJuego");
         botonVolverAJugar.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        exportarLog = new JButton("EXPORTAR LOG DE BATALLA");
+        exportarLog.setBounds(400, 600, 200, 30);
+        exportarLog.addActionListener(cHandler);
+        exportarLog.setActionCommand("exportarLog");
+        exportarLog.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        logExportado = new JLabel("Log de Batalla exportado!", SwingConstants.CENTER);
+        logExportado.setFont(fontAviso);
+        logExportado.setBounds(400, 600, 200, 30);
+        logExportado.setOpaque(false);
+        logExportado.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         endFondo = cargarFondo();
+
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(10,10));
         panel.add(titulo);
         panel.add(image);
         panel.add(name);
         panel.add(botonVolverAJugar);
+        panel.add(exportarLog);
+        panel.add(logExportado);
         panel.add(endFondo);
 
         return panel;
@@ -303,6 +336,22 @@ public class UI {
         nameLabel.setFont(fontHeroName);
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         return nameLabel;
+    }
+
+    JLabel getPersonajeAlignment(Character hero) {
+        Font fontHeroName = new Font("Masked Hero Demo", Font.PLAIN, 18);
+        String align = "";
+        switch (hero.alignment()) {
+            case "good" -> align = "Heroe";
+            case "bad" -> align = "Villano";
+            case "neutral" -> align = "Entidad";
+        }
+        JLabel alignmentLabel = new JLabel(align, SwingConstants.CENTER);
+        alignmentLabel.setOpaque(false);
+        alignmentLabel.setFont(fontHeroName);
+        alignmentLabel.setForeground(Color.WHITE);
+        alignmentLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        return alignmentLabel;
     }
 
     JLabel getPersonajeHp(Character hero) {

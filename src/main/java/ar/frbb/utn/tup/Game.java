@@ -31,6 +31,8 @@ public class Game {
                 case "seleccionar" -> vm.seleccionarPersonajes();
                 case "pelear" -> vm.iniciarPelea();
                 case "proximoTurno" -> vm.nuevoTurno();
+                case "finDelCombate" -> vm.mostrarGanador();
+                case "exportarLog" -> vm.logDeBatallaExportado();
                 case "nuevoJuego" -> vm.jugarDeNuevo();
             }
         }

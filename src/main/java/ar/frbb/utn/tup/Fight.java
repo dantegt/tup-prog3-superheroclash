@@ -7,7 +7,9 @@ import java.util.Random;
 public class Fight {
     private static int turno;
     private boolean ataca1;
-    private Random random;
+    private final Random random;
+
+    public int ganadorNum;
 
     public Fight(){
         turno = 1;
@@ -21,19 +23,23 @@ public class Fight {
         System.out.println("---- TURNO " + turno + " ---");
         if(ataca1) {
             int golpe = hero1.atacar(hero2);
-            Log.it(hero1.name() + " atacó a " + hero2.name() + "! Le hizo " + golpe + " de daño!");
-            System.out.println(hero1.name() + " atacó a " + hero2.name() + "! Le hizo " + golpe + " de daño!");
         } else {
             int golpe = hero2.atacar(hero1);
-            Log.it(hero2.name() + " atacó a " + hero1.name() + "! Le hizo " + golpe + " de daño!");
-            System.out.println(hero2.name() + " atacó a " + hero1.name() + "! Le hizo " + golpe + " de daño!");
         }
         System.out.println("Hero1: " + hero1.hpActual());
         System.out.println("Hero2: " + hero2.hpActual());
         System.out.println("-------");
         turno = turno + 1;
-        if (hero1.hpActual() <= 0) return hero2;
-        if (hero2.hpActual() <= 0) return hero1;
+        if (hero1.hpActual() <= 0) {
+            Log.it("▒♦▒ " + hero2.name() + " GANÓ EL COMBATE! ▒♦▒");
+            ganadorNum = 2;
+            return hero2;
+        }
+        if (hero2.hpActual() <= 0) {
+            Log.it("▒♦▒ " + hero1.name() + " GANÓ EL COMBATE! ▒♦▒");
+            ganadorNum = 1;
+            return hero1;
+        }
         return null;
     }
 

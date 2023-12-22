@@ -1,5 +1,7 @@
 package ar.frbb.utn.tup;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Log {
@@ -14,6 +16,12 @@ public class Log {
     public static void reset () {
         logs = new ArrayList<>();
     }
-
+    public static void exportLog() throws IOException {
+        FileWriter writer = new FileWriter("logDeBatalla.txt");
+        for(String log: logs) {
+            writer.write(log + System.lineSeparator());
+        }
+        writer.close();
+    }
 
 }

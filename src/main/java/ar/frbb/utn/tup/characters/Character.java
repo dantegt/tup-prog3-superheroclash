@@ -29,7 +29,7 @@ public abstract class Character {
     }
     public abstract int atacar(Character character);
     public abstract void defender(Character character, int damage);
-    public abstract void activarPoderEspecial();
+    public abstract void poderEspecial(Character character);
 
     public boolean critico (String atkAlign, String defAlign) {
         return  (atkAlign.equals("good") && defAlign.equals("bad")) ||
