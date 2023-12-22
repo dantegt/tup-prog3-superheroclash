@@ -18,7 +18,7 @@ import static ar.frbb.utn.tup.Team.getCharacter;
 public class UI {
     JFrame window;
     JPanel pantallaInicio, titulos, panelPrincipal, activeHero1, activeHero2, pelea, panelGanador;
-    JLabel fondo, logo, loading, titulo, turno;
+    JLabel fondo, endFondo, logo, loading, titulo, turno, heroImageCache1, heroImageCache2;
     JButton botonIniciar, botonPelear, botonVolverAJugar, proximoTurno;
     Character hero1, hero2, ganador;
     Image logoImage;
@@ -48,7 +48,6 @@ public class UI {
         window = new JFrame();
         window.setTitle(APP_NAME);
         window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        /*window.setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("test.jpg")))));*/
         window.setSize(1080, 764);
         window.setResizable(false);
 
@@ -117,7 +116,7 @@ public class UI {
         /* TITULOS */
         fondo = cargarFondo();
         botonIniciar = new JButton("COMENZAR");
-        botonIniciar.setBounds(400, 450, 200, 80);
+        botonIniciar.setBounds(420, 450, 200, 80);
         botonIniciar.addActionListener(cHandler);
         botonIniciar.setActionCommand("seleccionar");
         loading = new JLabel("Cargado personajes...");
@@ -160,8 +159,11 @@ public class UI {
 
         titulos.add(titulo);
 
-        activeHero1 = buildHeroUI(hero1);
-        activeHero2 = buildHeroUI(hero2);
+        activeHero1 = buildHeroUI(hero1, 1);
+        activeHero2 = buildHeroUI(hero2, 2);
+
+        activeHero1.setBackground(new Color(1F, 0.784F, 0.243F));
+        activeHero2.setBackground(new Color(0F, 0.706F, 0.773F));
 
         pelea = buildPeleaPanel();
 
@@ -170,7 +172,6 @@ public class UI {
         panelPrincipal.add(activeHero1, BorderLayout.LINE_START);
         panelPrincipal.add(pelea, BorderLayout.CENTER);
         panelPrincipal.add(activeHero2, BorderLayout.LINE_END);
-//        panelPrincipal.add(botonera, BorderLayout.CENTER);
 
         return panelPrincipal;
     }
@@ -214,38 +215,31 @@ public class UI {
     }
 
     void reBuildHeros() {
-//        window.remove(panelPrincipal);
         panelPrincipal.remove(pelea);
         panelPrincipal.remove(activeHero1);
         panelPrincipal.remove(activeHero2);
-        activeHero1 = buildHeroUI(hero1);
-        activeHero2 = buildHeroUI(hero2);
+        activeHero1 = buildHeroUI(hero1, 1);
+        activeHero2 = buildHeroUI(hero2, 2);
+        activeHero1.setBackground(new Color(1F, 0.784F, 0.243F));
+        activeHero2.setBackground(new Color(0F, 0.706F, 0.773F));
         pelea = buildPeleaPanel();
-//        activeHero1.revalidate();
-//        activeHero2.revalidate();
         panelPrincipal.add(activeHero1, BorderLayout.LINE_START);
         panelPrincipal.add(activeHero2, BorderLayout.LINE_END);
         panelPrincipal.add(pelea, BorderLayout.CENTER);
 
         panelPrincipal.revalidate();
-//        window.add(panelPrincipal);
-
-
-//        panelPrincipal.revalidate();
-//        panelPrincipal.repaint();
-//        window.revalidate();
-//        window.repaint();
-//        panelPrincipal.setVisible(true);
     }
 
     void resetGame() {
         fight = new Fight();
+        heroImageCache1 = null;
+        heroImageCache2 = null;
     }
 
-    JPanel buildHeroUI(Character hero) {
+    JPanel buildHeroUI(Character hero, int heroNum) {
         JPanel activeHero = new JPanel();
         activeHero.setLayout(new BoxLayout(activeHero, BoxLayout.Y_AXIS));
-        activeHero.add(getPersonajeImage(hero));
+        activeHero.add(getPersonajeImage(hero, heroNum));
         activeHero.add(getPersonajeName(hero));
         activeHero.add(getPersonajeHp(hero));
         return activeHero;
@@ -256,26 +250,39 @@ public class UI {
         JLabel titulo = new JLabel("Ganador!", SwingConstants.CENTER);
         titulo.setOpaque(false);
         titulo.setFont(fontHeroName);
+        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titulo.setBounds(350, 40, 300, 20);
+        int heroNum;
+        if (character.name().equals(hero1.name())) {
+            heroNum = 1;
+        } else {
+            heroNum = 2;
+        }
+
+        JLabel image = getPersonajeImage(character, heroNum);
+        image.setAlignmentX(Component.CENTER_ALIGNMENT);
+        image.setBounds(350, 60, 300, 480);
+
+        JLabel name = getPersonajeName(character);
+        name.setBounds(350, 500, 300, 40);
+        name.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         botonVolverAJugar = new JButton("VOLVER A PELEAR!");
-        botonVolverAJugar.setBounds(400, 450, 200, 80);
+        botonVolverAJugar.setBounds(400, 560, 200, 60);
         botonVolverAJugar.addActionListener(cHandler);
         botonVolverAJugar.setActionCommand("nuevoJuego");
+        botonVolverAJugar.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel borderPanel = new JPanel();
-        borderPanel.setLayout(new BorderLayout(10, 10));
-        borderPanel.setOpaque(false);
-
+        endFondo = cargarFondo();
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setLayout(new BorderLayout(10,10));
         panel.add(titulo);
-        panel.add(getPersonajeImage(character));
-        panel.add(getPersonajeName(character));
+        panel.add(image);
+        panel.add(name);
         panel.add(botonVolverAJugar);
+        panel.add(endFondo);
 
-        borderPanel.add(panel, BorderLayout.CENTER);
-
-        return borderPanel;
+        return panel;
     }
 
     Character getPersonaje() {
@@ -294,19 +301,24 @@ public class UI {
         JLabel nameLabel = new JLabel(hero.name(), SwingConstants.CENTER);
         nameLabel.setOpaque(false);
         nameLabel.setFont(fontHeroName);
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         return nameLabel;
     }
 
     JLabel getPersonajeHp(Character hero) {
-        Font fontHeroName = new Font("Masked Hero Demo", Font.PLAIN, 45);
-        JLabel hpLabel = new JLabel(String.valueOf(hero.hpActual()), SwingConstants.RIGHT);
-        hpLabel.setForeground(Color.BLUE);
+        Font fontHeroName = new Font("Masked Hero Demo", Font.PLAIN, 55);
+        JLabel hpLabel = new JLabel(String.valueOf(hero.hpActual()), SwingConstants.CENTER);
+        hpLabel.setForeground(Color.WHITE);
         hpLabel.setOpaque(false);
         hpLabel.setFont(fontHeroName);
+        hpLabel.setHorizontalAlignment(SwingConstants.CENTER);
         return hpLabel;
     }
 
-    JLabel getPersonajeImage(Character hero) {
+    JLabel getPersonajeImage(Character hero, int heroNum) {
+        if(heroNum == 1 && heroImageCache1 != null) return heroImageCache1;
+        if(heroNum == 2 && heroImageCache2 != null) return heroImageCache2;
+
         JLabel imagenLabel = new JLabel();
         Image image = null;
 
@@ -326,6 +338,12 @@ public class UI {
         imagenLabel = new JLabel(img);
         imagenLabel.setOpaque(false);
         imagenLabel.setBounds(0,0,300, 400);
+
+        switch (heroNum) {
+            case 1 -> heroImageCache1 = imagenLabel;
+            case 2 -> heroImageCache2 = imagenLabel;
+        }
+
         return imagenLabel;
     }
 }
