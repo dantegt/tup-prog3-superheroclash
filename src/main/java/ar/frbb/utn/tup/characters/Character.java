@@ -24,12 +24,18 @@ public abstract class Character {
     }
 
     private void setHpInicial() {
-        hpTotal = stats.strength() + (int) (stats.durability() * 1.4);
+        hpTotal = stats.strength() + (int) (stats.durability() * 2.4);
         hpActual = hpTotal;
     }
-    abstract int atacar(Character character);
-    abstract int defender(Character character, int damage);
-    abstract void activarPoderEspecial();
+    public abstract int atacar(Character character);
+    public abstract void defender(Character character, int damage);
+    public abstract void activarPoderEspecial();
+
+    public boolean critico (String atkAlign, String defAlign) {
+        return  (atkAlign.equals("good") && defAlign.equals("bad")) ||
+                (atkAlign.equals("bad") && defAlign.equals("neutral")) ||
+                (atkAlign.equals("neutral") && defAlign.equals("good"));
+    }
 
     public String name() {
         return name;

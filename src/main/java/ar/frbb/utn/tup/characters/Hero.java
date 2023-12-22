@@ -3,29 +3,32 @@ package ar.frbb.utn.tup.characters;
 import ar.frbb.utn.tup.Stats;
 
 public class Hero extends Character {
-
+    Stats stats;
     public Hero(String name, String raza, String genero, String image, String alignment, Stats stats) {
         super(name, raza, genero, image, alignment, stats);
+        this.stats = stats;
     }
 
     @Override
-    int atacar(Character character) {
-//        calcular critico
-//        calcular ataque = (combat + power) * critico
-//        character.hpActual = hpActual - ataque
-//        Log.it(character.name + " recibió " + ataque + " puntos de daño!")
-//        void
-        return 0;
+    public int atacar(Character character) {
+        boolean critico = critico(alignment(), character.alignment());
+        int poder = (stats.combat() + (int) (stats.power() * 1.4)) / 4;
+        if(critico) poder = (int) (poder * 1.2);
+        character.defender(this, poder);
+        return poder;
     }
 
     @Override
-    int defender(Character character, int damage) {
-
-        return 0;
+    public void defender(Character character, int damage) {
+        int defensa = (int)((stats.strength() + stats.durability()) / 6);
+        if(damage > defensa) damage = damage - defensa;
+        int vida = hpActual() - damage;
+        if(vida < 0 ) vida = 0;
+        setHpActual(vida);
     }
 
     @Override
-    void activarPoderEspecial() {
+    public void activarPoderEspecial() {
 
     }
 }

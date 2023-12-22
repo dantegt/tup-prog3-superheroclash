@@ -132,7 +132,6 @@ public class Team {
 //            Object ob = new JSONParser().parse(response);
 
             HttpResponse<JsonNode> response = Unirest.get(host + charId).asJson();
-            Log.it(response.getBody().toString());
 
             // parsing file "JSONExample.json"
             Object ob = new JSONParser().parse(response.getBody().toString());

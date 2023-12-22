@@ -1,5 +1,7 @@
 package ar.frbb.utn.tup;
 
+import ar.frbb.utn.tup.characters.Character;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -28,6 +30,7 @@ public class Game {
             switch (opcion) {
                 case "seleccionar" -> vm.seleccionarPersonajes();
                 case "pelear" -> vm.iniciarPelea();
+                case "proximoTurno" -> vm.nuevoTurno();
                 case "nuevoJuego" -> vm.jugarDeNuevo();
             }
         }
